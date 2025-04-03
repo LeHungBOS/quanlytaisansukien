@@ -118,6 +118,36 @@ def require_role(role: str):
     return checker
 
 # Asset CRUD
+
+from fastapi.responses import FileResponse
+import qrcode
+from barcode import Code128
+from barcode.writer import ImageWriter
+
+@app.get("/assets/barcode/{asset_id}")
+def barcode_image(asset_id: str):
+    path = f"static/barcodes/{asset_id}.png"
+    if not os.path.exists(path):
+        barcode = Code128(asset_id, writer=ImageWriter())
+        barcode.save(path[:-4])
+    return FileResponse(path)
+
+@app.get("/assets/qrcode/{asset_id}")
+def qrcode_image(asset_id: str):
+    path = f"static/qrcodes/{asset_id}.png"
+    if not os.path.exists(path):
+        img = qrcode.make(asset_id)
+        img.save(path)
+    return FileResponse(path)
+
+@app.get("/assets/view/{asset_id}", response_class=HTMLResponse)
+def view_asset(asset_id: str, request: Request):
+    db = SessionLocal()
+    asset = db.query(AssetDB).filter_by(id=asset_id).first()
+    db.close()
+    if not asset:
+        raise HTTPException(status_code=404, detail="Tài sản không tồn tại")
+    return templates.TemplateResponse("asset_detail.html", {"request": request, "asset": asset})
 @app.get("/assets", response_class=HTMLResponse)
 def list_assets(request: Request):
     db = SessionLocal()
@@ -187,6 +217,19 @@ def delete_asset(asset_id: str, user: UserDB = Depends(require_role("admin"))):
         db.commit()
     db.close()
     return RedirectResponse("/assets", status_code=302)
+
+@app.get("/assets/export")
+def export_assets(user: UserDB = Depends(require_role("admin"))):
+    db = SessionLocal()
+    assets = db.query(AssetDB).all()
+    db.close()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Tên", "Mã", "Danh mục", "Số lượng", "Tình trạng"])
+    for asset in assets:
+        writer.writerow([asset.id, asset.name, asset.code, asset.category, asset.quantity, asset.status])
+    output.seek(0)
+    return StreamingResponse(io.BytesIO(output.getvalue().encode("utf-8")), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=assets.csv"})
 
 # Order CRUD
 @app.get("/orders", response_class=HTMLResponse)
