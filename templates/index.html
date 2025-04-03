@@ -1,1 +1,33 @@
-{% extends 'base.html' %}{% block title %}Trang chủ{% endblock %}{% block content %}<h1 class='text-2xl font-bold'>🏠 Quản lý thiết bị</h1>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center mt-20">
+  <h1 class="text-4xl font-bold mb-6">Quản lý tài sản sự kiện</h1>
+  <p class="mb-8 text-lg text-gray-600">Theo dõi, xuất nhập kho, quản lý thiết bị nhanh chóng</p>
+
+  {% if not request.session.get("user") %}
+    <a href="/login" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+      Đăng nhập
+    </a>
+  {% else %}
+    <p class="text-green-600 text-lg font-semibold mb-4">Xin chào {{ request.session.get("user") }}!</p>
+
+    <div class="space-x-4">
+      <a href="/logout" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
+        Đăng xuất
+      </a>
+
+      {% if request.session.get("role") == "admin" %}
+        <a href="/users" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900 transition">
+          Quản lý người dùng
+        </a>
+        <a href="/assets" class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800 transition">
+          Quản lý thiết bị
+        </a>
+        <a href="/orders" class="bg-indigo-700 text-white px-4 py-2 rounded hover:bg-indigo-800 transition">
+          Quản lý đơn hàng
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
