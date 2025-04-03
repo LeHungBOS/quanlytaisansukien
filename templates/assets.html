@@ -1,30 +1,32 @@
-<!-- templates/assets.html -->
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Danh sách Tài sản</title>
+    <title>Quản lý Tài sản</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-            background-color: #f7f9fc;
+            font-family: "Segoe UI", sans-serif;
+            background: #f4f6f8;
+            padding: 30px;
         }
         .container {
             max-width: 1100px;
             margin: auto;
             background: #fff;
-            padding: 20px 30px;
-            border-radius: 12px;
+            border-radius: 10px;
+            padding: 25px 30px;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
         }
         h2 {
             margin-bottom: 20px;
+            color: #333;
         }
         .filters input,
         .filters select {
+            padding: 8px 12px;
             margin-right: 10px;
-            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
         }
         table {
             width: 100%;
@@ -33,39 +35,39 @@
             background: #fff;
         }
         th, td {
-            padding: 10px;
+            padding: 12px;
+            border-bottom: 1px solid #e1e1e1;
             text-align: left;
-            border-bottom: 1px solid #ddd;
             vertical-align: top;
         }
         th {
             background: #007bff;
-            color: #fff;
+            color: white;
         }
         img.asset-img {
-            max-width: 100px;
-            max-height: 80px;
+            max-width: 80px;
             border-radius: 4px;
         }
         .actions a, .actions form {
             display: inline-block;
-            margin-right: 6px;
-        }
-        .actions form {
-            display: inline;
+            margin-right: 5px;
         }
         .btn {
-            padding: 5px 10px;
+            padding: 6px 12px;
+            border-radius: 5px;
             color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            text-decoration: none;
             font-size: 13px;
         }
         .btn-edit { background: #ffc107; }
         .btn-delete { background: #dc3545; }
-        .btn-add { background: #28a745; margin-top: 10px; }
-        .btn-export { background: #17a2b8; }
+        .btn-add { background: #28a745; margin-bottom: 12px; }
+        .btn-export { background: #17a2b8; margin-left: 10px; }
+        .btn-detail {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -74,63 +76,61 @@
 
     <form method="get" class="filters">
         <input type="text" name="search" placeholder="Tìm theo tên..." value="{{ search or '' }}">
-        <input type="text" name="category" placeholder="Danh mục" value="{{ category or '' }}">
+        <input type="text" name="category" placeholder="Danh mục..." value="{{ category or '' }}">
         <select name="status">
             <option value="">-- Trạng thái --</option>
             <option value="Sẵn sàng" {% if status == 'Sẵn sàng' %}selected{% endif %}>Sẵn sàng</option>
             <option value="Đang cho thuê" {% if status == 'Đang cho thuê' %}selected{% endif %}>Đang cho thuê</option>
         </select>
         <button type="submit">🔍 Lọc</button>
-        <a href="/assets" style="margin-left:10px;">🧹 Xóa lọc</a>
+        <a href="/assets">🧹 Xoá lọc</a>
     </form>
 
-    <div style="margin: 15px 0;">
-        <a href="/assets/add" class="btn btn-add">➕ Thêm tài sản</a>
-        <a href="/assets/export" class="btn btn-export">📥 Xuất CSV</a>
-    </div>
+    <a href="/assets/add" class="btn btn-add">➕ Thêm tài sản</a>
+    <a href="/assets/export" class="btn btn-export">📥 Xuất CSV</a>
 
     {% if assets %}
     <table>
         <thead>
-            <tr>
-                <th>Ảnh</th>
-                <th>Tên</th>
-                <th>Mã</th>
-                <th>Danh mục</th>
-                <th>Số lượng</th>
-                <th>Trạng thái</th>
-                <th>Mô tả</th>
-                <th>Hành động</th>
-            </tr>
+        <tr>
+            <th>Ảnh</th>
+            <th>Tên</th>
+            <th>Mã</th>
+            <th>Danh mục</th>
+            <th>Số lượng</th>
+            <th>Trạng thái</th>
+            <th>Mô tả</th>
+            <th>Hành động</th>
+        </tr>
         </thead>
         <tbody>
-            {% for asset in assets %}
-            <tr>
-                <td>
-                    {% if asset.image_path %}
-                        <img src="/{{ asset.image_path }}" class="asset-img">
-                    {% else %}
-                        <i>Không có</i>
-                    {% endif %}
-                </td>
-                <td>{{ asset.name }}</td>
-                <td>{{ asset.code }}</td>
-                <td>{{ asset.category }}</td>
-                <td>{{ asset.quantity }}</td>
-                <td>{{ asset.status }}</td>
-                <td>{{ asset.description[:100] }}{% if asset.description|length > 100 %}...{% endif %}</td>
-                <td class="actions">
-                    <a href="/assets/edit/{{ asset.id }}" class="btn btn-edit">✏️</a>
-                    <form method="post" action="/assets/delete/{{ asset.id }}" onsubmit="return confirm('Xác nhận xoá tài sản này?');">
-                        <button type="submit" class="btn btn-delete">🗑️</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
+        {% for asset in assets %}
+        <tr>
+            <td>
+                {% if asset.image_path %}
+                    <img src="/{{ asset.image_path }}" class="asset-img">
+                {% else %}
+                    <span>—</span>
+                {% endif %}
+            </td>
+            <td><a href="/assets/view/{{ asset.id }}" class="btn-detail">{{ asset.name }}</a></td>
+            <td>{{ asset.code }}</td>
+            <td>{{ asset.category }}</td>
+            <td>{{ asset.quantity }}</td>
+            <td>{{ asset.status }}</td>
+            <td>{{ asset.description[:100] }}{% if asset.description|length > 100 %}...{% endif %}</td>
+            <td class="actions">
+                <a href="/assets/edit/{{ asset.id }}" class="btn btn-edit">✏️</a>
+                <form method="post" action="/assets/delete/{{ asset.id }}" onsubmit="return confirm('Xác nhận xoá tài sản này?');">
+                    <button type="submit" class="btn btn-delete">🗑️</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
         </tbody>
     </table>
     {% else %}
-        <p>⚠️ Không tìm thấy tài sản nào.</p>
+        <p><i>Không tìm thấy tài sản.</i></p>
     {% endif %}
 </div>
 </body>
