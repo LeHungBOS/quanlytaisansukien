@@ -1,22 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>{{ 'Cập nhật' if asset else 'Thêm' }} tài sản</title>
+    <title>{{ 'Cập nhật' if asset else 'Thêm' }} Tài sản</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f9fb;
+            padding: 40px;
+        }
+        .container {
+            background: white;
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        form input[type="text"],
+        form input[type="number"],
+        form textarea,
+        form input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 4px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        img.preview {
+            margin: 10px 0;
+            max-width: 100%;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
-    <h2>{{ 'Cập nhật' if asset else 'Thêm' }} tài sản</h2>
+<div class="container">
+    <h2>{{ 'Cập nhật' if asset else 'Thêm' }} Tài sản</h2>
     <form method="post" enctype="multipart/form-data" action="{{ '/assets/edit/' + asset.id if asset else '/assets/add' }}">
-        <label>Tên: <input type="text" name="name" value="{{ asset.name if asset else '' }}" required></label><br>
-        <label>Mã: <input type="text" name="code" value="{{ asset.code if asset else '' }}" required></label><br>
-        <label>Danh mục: <input type="text" name="category" value="{{ asset.category if asset else '' }}" required></label><br>
-        <label>Số lượng: <input type="number" name="quantity" value="{{ asset.quantity if asset else 1 }}" min="1"></label><br>
-        <label>Mô tả: <textarea name="description">{{ asset.description if asset else '' }}</textarea></label><br>
+        <label>
+            Tên:
+            <input type="text" name="name" value="{{ asset.name if asset else '' }}" required>
+        </label>
+        <label>
+            Mã:
+            <input type="text" name="code" value="{{ asset.code if asset else '' }}" required>
+        </label>
+        <label>
+            Danh mục:
+            <input type="text" name="category" value="{{ asset.category if asset else '' }}" required>
+        </label>
+        <label>
+            Số lượng:
+            <input type="number" name="quantity" value="{{ asset.quantity if asset else 1 }}" min="1">
+        </label>
+        <label>
+            Mô tả:
+            <textarea name="description">{{ asset.description if asset else '' }}</textarea>
+        </label>
         {% if not asset %}
-            <label>Hình ảnh: <input type="file" name="image"></label><br>
+            <label>Hình ảnh: <input type="file" name="image"></label>
         {% endif %}
+
+        {% if asset and asset.image_path %}
+            <p>Ảnh hiện tại:</p>
+            <img src="/{{ asset.image_path }}" alt="Ảnh tài sản" class="preview">
+        {% endif %}
+
         <button type="submit">{{ 'Cập nhật' if asset else 'Thêm' }}</button>
     </form>
-    <p><a href="/assets">← Quay lại danh sách tài sản</a></p>
+
+    <a href="/assets" class="back-link">← Quay lại danh sách</a>
+</div>
 </body>
 </html>
