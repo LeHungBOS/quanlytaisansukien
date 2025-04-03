@@ -20,7 +20,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # Database
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/mydb")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:etjlFARnCMmVDcAVokkRqunFToVHAvHM@postgres.railway.internal:5432/railway")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
