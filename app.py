@@ -84,6 +84,10 @@ def logout(request: Request):
     request.session.clear()
     return RedirectResponse("/login", status_code=302)
 
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
 def get_current_user(request: Request):
     user_id = request.session.get("user_id")
     if not user_id:
