@@ -229,7 +229,11 @@ def export_assets(user: UserDB = Depends(require_role("admin"))):
     for asset in assets:
         writer.writerow([asset.id, asset.name, asset.code, asset.category, asset.quantity, asset.status])
     output.seek(0)
-    return StreamingResponse(io.BytesIO(output.getvalue().encode("utf-8")), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=assets.csv"})
+    return StreamingResponse(
+        io.BytesIO(output.getvalue().encode("utf-8-sig")),  # fix font tiếng Việt
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=assets.csv"}
+    )
 
 # Order CRUD
 @app.get("/orders", response_class=HTMLResponse)
