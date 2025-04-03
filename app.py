@@ -20,8 +20,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # Database
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {})
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:password@localhost:5432/mydb")
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 
