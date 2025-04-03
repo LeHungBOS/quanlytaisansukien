@@ -121,9 +121,23 @@ def require_role(role: str):
 @app.get("/assets", response_class=HTMLResponse)
 def list_assets(request: Request):
     db = SessionLocal()
-    assets = db.query(AssetDB).all()
+    query = db.query(AssetDB)
+
+    search = request.query_params.get("search")
+    category = request.query_params.get("category")
+    status = request.query_params.get("status")
+
+    if search:
+        query = query.filter(AssetDB.name.ilike(f"%{search}%"))
+    if category:
+        query = query.filter(AssetDB.category == category)
+    if status:
+        query = query.filter(AssetDB.status == status)
+
+    assets = query.all()
+    print(f"📦 Tổng số tài sản trong DB sau lọc: {len(assets)}")
     db.close()
-    return templates.TemplateResponse("assets.html", {"request": request, "assets": assets})
+    return templates.TemplateResponse("assets.html", {"request": request, "assets": assets, "search": search, "category": category, "status": status})
 
 @app.get("/assets/add", response_class=HTMLResponse)
 def add_asset_form(request: Request, user: UserDB = Depends(require_role("admin"))):
@@ -174,4 +188,62 @@ def delete_asset(asset_id: str, user: UserDB = Depends(require_role("admin"))):
     db.close()
     return RedirectResponse("/assets", status_code=302)
 
-# Order logic continues below (unchanged)...
+# Order CRUD
+@app.get("/orders", response_class=HTMLResponse)
+def list_orders(request: Request):
+    db = SessionLocal()
+    orders = db.query(OrderDB).all()
+    db.close()
+    return templates.TemplateResponse("orders.html", {"request": request, "orders": orders})
+
+@app.get("/orders/add", response_class=HTMLResponse)
+def add_order_form(request: Request, user: UserDB = Depends(require_role("admin"))):
+    db = SessionLocal()
+    all_assets = db.query(AssetDB).filter(AssetDB.status == "Sẵn sàng").all()
+    db.close()
+    return templates.TemplateResponse("order_detail.html", {"request": request, "all_assets": all_assets})
+
+@app.post("/orders/add")
+def add_order(request: Request, customer_name: str = Form(...), start_date: date = Form(...), end_date: date = Form(...), asset_ids: list[str] = Form(...), user: UserDB = Depends(require_role("admin"))):
+    db = SessionLocal()
+    assets = db.query(AssetDB).filter(AssetDB.id.in_(asset_ids)).all()
+    for asset in assets:
+        asset.status = "Đang cho thuê"
+    order = OrderDB(id=str(uuid4()), customer_name=customer_name, start_date=start_date, end_date=end_date, assets=assets)
+    db.add(order)
+    db.commit()
+    db.close()
+    return RedirectResponse("/orders", status_code=302)
+
+@app.get("/orders/{order_id}", response_class=HTMLResponse)
+def view_order(request: Request, order_id: str):
+    db = SessionLocal()
+    order = db.query(OrderDB).filter_by(id=order_id).first()
+    all_assets = db.query(AssetDB).all()
+    db.close()
+    return templates.TemplateResponse("order_detail.html", {"request": request, "order": order, "assets": order.assets, "all_assets": all_assets})
+
+@app.post("/orders/status/{order_id}")
+def update_order_status(order_id: str, new_status: str = Form(...), user: UserDB = Depends(require_role("admin"))):
+    db = SessionLocal()
+    order = db.query(OrderDB).filter_by(id=order_id).first()
+    if order:
+        order.status = new_status
+        if new_status in ["Hoàn tất", "Đã hủy"]:
+            for asset in order.assets:
+                asset.status = "Sẵn sàng"
+        db.commit()
+    db.close()
+    return RedirectResponse(f"/orders/{order_id}", status_code=302)
+
+@app.post("/orders/delete/{order_id}")
+def delete_order(order_id: str, user: UserDB = Depends(require_role("admin"))):
+    db = SessionLocal()
+    order = db.query(OrderDB).filter_by(id=order_id).first()
+    if order:
+        for asset in order.assets:
+            asset.status = "Sẵn sàng"
+        db.delete(order)
+        db.commit()
+    db.close()
+    return RedirectResponse("/orders", status_code=302)
