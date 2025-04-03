@@ -62,6 +62,17 @@ class OrderDB(Base):
 
 Base.metadata.create_all(bind=engine)
 
+# Auto-create default admin if none exists
+def create_default_admin():
+    db = SessionLocal()
+    if not db.query(UserDB).filter_by(username="admin").first():
+        admin = UserDB(id=str(uuid4()), username="admin", password="admin", role="admin")
+        db.add(admin)
+        db.commit()
+    db.close()
+
+create_default_admin()
+
 # Authentication
 @app.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
