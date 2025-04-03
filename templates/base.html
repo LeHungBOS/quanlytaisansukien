@@ -1,1 +1,126 @@
-<!DOCTYPE html><html><head><title>{% block title %}{% endblock %}</title><link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"></head><body class="p-4">{% block content %}{% endblock %}</body></html>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Trang{% endblock %}</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; background: #f6f8fa; }
+
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 220px; height: 100vh;
+      background: #343a40;
+      padding: 20px;
+      color: white;
+      transform: translateX(0);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      margin-bottom: 10px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .sidebar a.logout { color: #ffc107; }
+    .sidebar a.active {
+      background: #495057;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+
+    .user-info { margin-bottom: 20px; }
+
+    .submenu {
+      margin-left: 12px;
+      display: none;
+    }
+
+    .has-sub:hover .submenu {
+      display: block;
+    }
+
+    .sub {
+      font-weight: normal;
+      font-size: 14px;
+      margin: 4px 0;
+      color: #ccc;
+    }
+
+    .main {
+      margin-left: 240px;
+      padding: 30px;
+      transition: margin 0.3s ease;
+    }
+
+    .toggle-btn {
+      position: fixed;
+      top: 10px; left: 10px;
+      background: #343a40;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-weight: bold;
+      z-index: 1100;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      .toggle-btn {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<button class="toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('show')">☰</button>
+
+<div class="sidebar" id="sidebar">
+  <div class="user-info">
+    👤 {{ request.session.get("username", "Khách") }}<br>
+    <small>({{ request.session.get("role", "guest") }})</small>
+  </div>
+
+  <a href="/" class="{% if request.url.path == '/' %}active{% endif %}">🏠 Trang chủ</a>
+
+  <div class="has-sub">
+    <a href="/assets" class="{% if '/assets' in request.url.path %}active{% endif %}">📦 Tài sản ▾</a>
+    <div class="submenu">
+      {% for cat in categories %}
+        <a class="sub" href="/assets?category={{ cat }}">📁 {{ cat }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if request.session.get("role") == "admin" %}
+    <a href="/orders" class="{% if '/orders' in request.url.path %}active{% endif %}">🧾 Đơn hàng</a>
+  {% endif %}
+
+  <a href="/logout" class="logout">🚪 Đăng xuất</a>
+</div>
+
+<div class="main">
+  {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
