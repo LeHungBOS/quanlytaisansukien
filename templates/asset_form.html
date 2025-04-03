@@ -1,1 +1,22 @@
-{% extends 'base.html' %}{% block content %}<form method='post' enctype='multipart/form-data'><input name='name'><input name='code'><input name='quantity'><input name='image' type='file'><button>Lưu</button></form>{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ 'Cập nhật' if asset else 'Thêm' }} tài sản</title>
+</head>
+<body>
+    <h2>{{ 'Cập nhật' if asset else 'Thêm' }} tài sản</h2>
+    <form method="post" enctype="multipart/form-data" action="{{ '/assets/edit/' + asset.id if asset else '/assets/add' }}">
+        <label>Tên: <input type="text" name="name" value="{{ asset.name if asset else '' }}" required></label><br>
+        <label>Mã: <input type="text" name="code" value="{{ asset.code if asset else '' }}" required></label><br>
+        <label>Danh mục: <input type="text" name="category" value="{{ asset.category if asset else '' }}" required></label><br>
+        <label>Số lượng: <input type="number" name="quantity" value="{{ asset.quantity if asset else 1 }}" min="1"></label><br>
+        <label>Mô tả: <textarea name="description">{{ asset.description if asset else '' }}</textarea></label><br>
+        {% if not asset %}
+            <label>Hình ảnh: <input type="file" name="image"></label><br>
+        {% endif %}
+        <button type="submit">{{ 'Cập nhật' if asset else 'Thêm' }}</button>
+    </form>
+    <p><a href="/assets">← Quay lại danh sách tài sản</a></p>
+</body>
+</html>
