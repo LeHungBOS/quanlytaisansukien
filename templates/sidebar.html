@@ -1,0 +1,46 @@
+<style>
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 200px;
+    height: 100vh;
+    background: #343a40;
+    padding: 20px;
+    color: white;
+    font-family: sans-serif;
+  }
+  .sidebar a {
+    display: block;
+    color: white;
+    margin: 12px 0;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .sidebar a.logout {
+    color: #ffc107;
+  }
+  .sidebar .active {
+    background: #495057;
+    padding: 8px;
+    border-radius: 6px;
+  }
+  .main-content {
+    margin-left: 220px;
+    padding: 30px;
+  }
+</style>
+
+<div class="sidebar">
+  <div style="margin-bottom: 20px;">
+    👤 {{ request.session.get("username", "Chưa đăng nhập") }}
+    <br>
+    <small>({{ request.session.get("role", "guest") }})</small>
+  </div>
+
+  <a href="/" class="{% if request.url.path == '/' %}active{% endif %}">🏠 Trang chủ</a>
+  <a href="/assets" class="{% if '/assets' in request.url.path %}active{% endif %}">📦 Tài sản</a>
+  {% if request.session.get("role") == "admin" %}
+    <a href="/orders" class="{% if '/orders' in request.url.path %}active{% endif %}">🧾 Đơn hàng</a>
+  {% endif %}
+  <a href="/logout" class="logout">🚪 Đăng xuất</a>
+</div>
