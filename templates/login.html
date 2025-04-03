@@ -1,1 +1,24 @@
-{% extends 'base.html' %}{% block title %}Đăng nhập{% endblock %}{% block content %}<form method='post'><input type='text' name='username' placeholder='Tên đăng nhập'><input type='password' name='password' placeholder='Mật khẩu'><button type='submit'>Đăng nhập</button></form>{% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-md mx-auto mt-20 bg-white p-8 rounded shadow">
+  <h2 class="text-2xl font-bold mb-6 text-center">Đăng nhập</h2>
+
+  {% if error %}
+    <div class="bg-red-100 text-red-700 px-4 py-2 mb-4 rounded">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" action="/login" class="space-y-4">
+    <div>
+      <label class="block text-gray-700">Tên đăng nhập</label>
+      <input type="text" name="username" class="w-full border px-3 py-2 rounded" required>
+    </div>
+    <div>
+      <label class="block text-gray-700">Mật khẩu</label>
+      <input type="password" name="password" class="w-full border px-3 py-2 rounded" required>
+    </div>
+    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+      Đăng nhập
+    </button>
+  </form>
+</div>
+{% endblock %}
