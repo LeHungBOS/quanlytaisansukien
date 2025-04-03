@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết Tài sản</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f4f8;
+            padding: 40px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        .field {
+            margin-bottom: 12px;
+        }
+        .field label {
+            font-weight: bold;
+        }
+        .image-preview {
+            margin: 20px 0;
+            max-width: 100%;
+            border-radius: 6px;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .buttons a,
+        .buttons form {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+        }
+        .btn-edit {
+            background-color: #ffc107;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+        }
+        .btn-back {
+            background-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>📦 Chi tiết Tài sản</h2>
+
+    {% if asset.image_path %}
+        <img src="/{{ asset.image_path }}" alt="Ảnh tài sản" class="image-preview">
+    {% endif %}
+
+    <div class="field"><label>Tên:</label> {{ asset.name }}</div>
+    <div class="field"><label>Mã:</label> {{ asset.code }}</div>
+    <div class="field"><label>Danh mục:</label> {{ asset.category }}</div>
+    <div class="field"><label>Số lượng:</label> {{ asset.quantity }}</div>
+    <div class="field"><label>Trạng thái:</label> {{ asset.status }}</div>
+    <div class="field"><label>Mô tả:</label> {{ asset.description or "Không có" }}</div>
+
+    <div class="buttons">
+        <a href="/assets" class="btn btn-back">← Quay lại</a>
+        <a href="/assets/edit/{{ asset.id }}" class="btn btn-edit">✏️ Sửa</a>
+        <form method="post" action="/assets/delete/{{ asset.id }}" onsubmit="return confirm('Bạn có chắc muốn xoá tài sản này?');">
+            <button type="submit" class="btn btn-delete">🗑️ Xoá</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
