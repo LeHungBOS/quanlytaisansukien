@@ -1,33 +1,29 @@
-{% extends "base.html" %}
-{% block content %}
-<div class="text-center mt-20">
-  <h1 class="text-4xl font-bold mb-6">Quản lý tài sản sự kiện</h1>
-  <p class="mb-8 text-lg text-gray-600">Theo dõi, xuất nhập kho, quản lý thiết bị nhanh chóng</p>
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Tài sản & Đơn hàng</title>
+</head>
+<body>
+    <h1>Chào mừng, {{ request.session.get('username', 'Khách') }}!</h1>
 
-  {% if not request.session.get("user") %}
-    <a href="/login" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
-      Đăng nhập
-    </a>
-  {% else %}
-    <p class="text-green-600 text-lg font-semibold mb-4">Xin chào {{ request.session.get("user") }}!</p>
-
-    <div class="space-x-4">
-      <a href="/logout" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
-        Đăng xuất
-      </a>
-
-      {% if request.session.get("role") == "admin" %}
-        <a href="/users" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-900 transition">
-          Quản lý người dùng
-        </a>
-        <a href="/assets" class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800 transition">
-          Quản lý thiết bị
-        </a>
-        <a href="/orders" class="bg-indigo-700 text-white px-4 py-2 rounded hover:bg-indigo-800 transition">
-          Quản lý đơn hàng
-        </a>
-      {% endif %}
-    </div>
-  {% endif %}
-</div>
-{% endblock %}
+    {% if request.session.get('user_id') %}
+        <p><strong>Vai trò:</strong> {{ request.session.get('role') }}</p>
+        <ul>
+            <li><a href="/assets">📦 Danh sách tài sản</a></li>
+            {% if request.session.get('role') == 'admin' %}
+                <li><a href="/assets/add">➕ Thêm tài sản</a></li>
+            {% endif %}
+            <li><a href="/orders">🧾 Danh sách đơn hàng</a></li>
+            {% if request.session.get('role') == 'admin' %}
+                <li><a href="/orders/add">➕ Thêm đơn hàng</a></li>
+            {% endif %}
+            <li><a href="/assets/export">📥 Xuất danh sách tài sản (CSV)</a></li>
+            <li><a href="/logout">🚪 Đăng xuất</a></li>
+        </ul>
+    {% else %}
+        <p><a href="/login">🔐 Đăng nhập</a></p>
+    {% endif %}
+</body>
+</html>
