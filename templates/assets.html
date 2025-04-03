@@ -1,1 +1,32 @@
-{% extends 'base.html' %}{% block title %}Thiết bị{% endblock %}{% block content %}<h1>Danh sách thiết bị</h1>{% endblock %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách tài sản</title>
+</head>
+<body>
+    <h2>Danh sách tài sản</h2>
+    {% if assets %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Tên</th><th>Mã</th><th>Danh mục</th><th>Số lượng</th><th>Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in assets %}
+            <tr>
+                <td>{{ asset.name }}</td>
+                <td>{{ asset.code }}</td>
+                <td>{{ asset.category }}</td>
+                <td>{{ asset.quantity }}</td>
+                <td>{{ asset.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Không có tài sản nào.</p>
+    {% endif %}
+</body>
+</html>
