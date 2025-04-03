@@ -165,6 +165,34 @@ def list_assets(request: Request):
         query = query.filter(AssetDB.status == status)
 
     assets = query.all()
+    categories = db.query(AssetDB.category).distinct().all()
+    db.close()
+
+    category_list = sorted(set(cat[0] for cat in categories if cat[0]))
+    return templates.TemplateResponse("assets.html", {
+        "request": request,
+        "assets": assets,
+        "search": search,
+        "category": category,
+        "status": status,
+        "categories": category_list
+    })
+def list_assets(request: Request):
+    db = SessionLocal()
+    query = db.query(AssetDB)
+
+    search = request.query_params.get("search")
+    category = request.query_params.get("category")
+    status = request.query_params.get("status")
+
+    if search:
+        query = query.filter(AssetDB.name.ilike(f"%{search}%"))
+    if category:
+        query = query.filter(AssetDB.category == category)
+    if status:
+        query = query.filter(AssetDB.status == status)
+
+    assets = query.all()
     print(f"📦 Tổng số tài sản trong DB sau lọc: {len(assets)}")
     db.close()
     return templates.TemplateResponse("assets.html", {"request": request, "assets": assets, "search": search, "category": category, "status": status})
@@ -195,7 +223,7 @@ def edit_asset_form(asset_id: str, request: Request, user: UserDB = Depends(requ
     return templates.TemplateResponse("asset_form.html", {"request": request, "asset": asset})
 
 @app.post("/assets/edit/{asset_id}")
-def edit_asset(asset_id: str, name: str = Form(...), code: str = Form(...), category: str = Form(...), quantity: int = Form(...), description: str = Form(""), user: UserDB = Depends(require_role("admin"))):
+def edit_asset(asset_id: str, name: str = Form(...), code: str = Form(...), category: str = Form(...), quantity: int = Form(...), status: str = Form(...), description: str = Form(""), user: UserDB = Depends(require_role("admin"))):
     db = SessionLocal()
     asset = db.query(AssetDB).filter_by(id=asset_id).first()
     if asset:
@@ -203,6 +231,7 @@ def edit_asset(asset_id: str, name: str = Form(...), code: str = Form(...), cate
         asset.code = code
         asset.category = category
         asset.quantity = quantity
+        asset.status = status
         asset.description = description
         db.commit()
     db.close()
@@ -276,9 +305,13 @@ def update_order_status(order_id: str, new_status: str = Form(...), user: UserDB
     order = db.query(OrderDB).filter_by(id=order_id).first()
     if order:
         order.status = new_status
-        if new_status in ["Hoàn tất", "Đã hủy"]:
-            for asset in order.assets:
+        for asset in order.assets:
+            if new_status == "Hoàn tất":
                 asset.status = "Sẵn sàng"
+            elif new_status == "Đã hủy":
+                asset.status = "Chờ xử lý"
+            elif new_status == "Bảo trì":
+                asset.status = "Bảo trì"
         db.commit()
     db.close()
     return RedirectResponse(f"/orders/{order_id}", status_code=302)
