@@ -1,16 +1,85 @@
+<!-- templates/assets.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Danh sách tài sản</title>
+    <title>Danh sách Tài sản</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f2f4f8;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.05);
+            max-width: 1000px;
+            margin: auto;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+        }
+        .add-btn {
+            background-color: #28a745;
+        }
+        .edit-btn {
+            background-color: #ffc107;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .top-actions {
+            margin-bottom: 20px;
+        }
+        .top-actions a {
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Danh sách tài sản</h2>
+<div class="container">
+    <h2>📦 Danh sách Tài sản</h2>
+
+    <div class="top-actions">
+        <a href="/assets/add" class="btn add-btn">➕ Thêm tài sản</a>
+        <a href="/assets/export" class="btn">📥 Xuất CSV</a>
+        <a href="/" class="btn">← Trang chủ</a>
+    </div>
+
     {% if assets %}
-    <table border="1">
+    <table>
         <thead>
             <tr>
-                <th>Tên</th><th>Mã</th><th>Danh mục</th><th>Số lượng</th><th>Trạng thái</th>
+                <th>Tên</th>
+                <th>Mã</th>
+                <th>Danh mục</th>
+                <th>Số lượng</th>
+                <th>Tình trạng</th>
+                <th>Hành động</th>
             </tr>
         </thead>
         <tbody>
@@ -21,12 +90,19 @@
                 <td>{{ asset.category }}</td>
                 <td>{{ asset.quantity }}</td>
                 <td>{{ asset.status }}</td>
+                <td>
+                    <a href="/assets/edit/{{ asset.id }}" class="btn edit-btn">✏️ Sửa</a>
+                    <form method="post" action="/assets/delete/{{ asset.id }}" style="display:inline;" onsubmit="return confirm('Xác nhận xoá thiết bị này?');">
+                        <button type="submit" class="btn delete-btn">🗑️ Xoá</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {% else %}
-        <p>Không có tài sản nào.</p>
+        <p><i>Không có tài sản nào.</i></p>
     {% endif %}
+</div>
 </body>
 </html>
