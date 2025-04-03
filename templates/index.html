@@ -1,29 +1,75 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Trang chính - Quản lý Tài sản & Đơn hàng</title>
+    <title>Quản lý Tài sản & Đơn hàng</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            color: #222;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+        .btn {
+            display: inline-block;
+            margin: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn.logout {
+            background-color: #dc3545;
+        }
+        .btn.logout:hover {
+            background-color: #a71d2a;
+        }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Chào mừng {{ request.session.get('username', 'Khách') }}!</h1>
+<div class="container">
+    <h1>Chào {{ request.session.get('username', 'Khách') }} 👋</h1>
 
     {% if request.session.get('user_id') %}
-        <p>Vai trò: <strong>{{ request.session.get('role') }}</strong></p>
-        <ul>
-            <li><a href="/assets">📦 Danh sách tài sản</a></li>
+        <p><strong>Vai trò:</strong> {{ request.session.get('role') }}</p>
+
+        <div class="grid">
+            <a href="/assets" class="btn">📦 Danh sách Tài sản</a>
             {% if request.session.get('role') == 'admin' %}
-                <li><a href="/assets/add">➕ Thêm tài sản</a></li>
+                <a href="/assets/add" class="btn">➕ Thêm Tài sản</a>
             {% endif %}
-            <li><a href="/orders">🧾 Danh sách đơn hàng</a></li>
+            <a href="/orders" class="btn">📑 Danh sách Đơn hàng</a>
             {% if request.session.get('role') == 'admin' %}
-                <li><a href="/orders/add">➕ Tạo đơn hàng</a></li>
+                <a href="/orders/add" class="btn">➕ Tạo Đơn hàng</a>
             {% endif %}
-            <li><a href="/assets/export">📥 Xuất danh sách tài sản (CSV)</a></li>
-            <li><a href="/logout">🚪 Đăng xuất</a></li>
-        </ul>
+            <a href="/assets/export" class="btn">📥 Xuất CSV</a>
+            <a href="/logout" class="btn logout">🚪 Đăng xuất</a>
+        </div>
+
     {% else %}
-        <p><a href="/login">🔐 Đăng nhập</a></p>
+        <p><a href="/login" class="btn">🔐 Đăng nhập</a></p>
     {% endif %}
+</div>
 </body>
 </html>
