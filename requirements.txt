@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+jinja2
+sqlalchemy
+psycopg2-binary
+python-multipart
+python-dotenv
+qrcode
+reportlab
+python-barcode
