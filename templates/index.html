@@ -3,13 +3,13 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý Tài sản & Đơn hàng</title>
+    <title>Trang chính - Quản lý Tài sản & Đơn hàng</title>
 </head>
 <body>
-    <h1>Chào mừng, {{ request.session.get('username', 'Khách') }}!</h1>
+    <h1>Chào mừng {{ request.session.get('username', 'Khách') }}!</h1>
 
     {% if request.session.get('user_id') %}
-        <p><strong>Vai trò:</strong> {{ request.session.get('role') }}</p>
+        <p>Vai trò: <strong>{{ request.session.get('role') }}</strong></p>
         <ul>
             <li><a href="/assets">📦 Danh sách tài sản</a></li>
             {% if request.session.get('role') == 'admin' %}
@@ -17,7 +17,7 @@
             {% endif %}
             <li><a href="/orders">🧾 Danh sách đơn hàng</a></li>
             {% if request.session.get('role') == 'admin' %}
-                <li><a href="/orders/add">➕ Thêm đơn hàng</a></li>
+                <li><a href="/orders/add">➕ Tạo đơn hàng</a></li>
             {% endif %}
             <li><a href="/assets/export">📥 Xuất danh sách tài sản (CSV)</a></li>
             <li><a href="/logout">🚪 Đăng xuất</a></li>
