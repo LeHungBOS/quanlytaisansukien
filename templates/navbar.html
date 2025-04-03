@@ -1,7 +1,13 @@
 <!-- templates/navbar.html -->
-<div style="background: #343a40; padding: 12px 24px; color: white; font-family: sans-serif;">
-  <a href="/" style="color: white; margin-right: 20px; text-decoration: none;">🏠 <span style="color: lightgreen;">Trang chủ</span></a>
-  <a href="/assets" style="color: white; margin-right: 20px; text-decoration: none;">📦 <span style="color: lightblue;">Tài sản</span></a>
-  <a href="/orders" style="color: white; margin-right: 20px; text-decoration: none;">🧾 <span style="color: orange;">Đơn hàng</span></a>
-  <a href="/logout" style="color: #ffc107; text-decoration: none;">🚪 Đăng xuất</a>
+<div style="background: #343a40; padding: 12px 24px; color: white; font-family: sans-serif; display: flex; justify-content: space-between; align-items: center;">
+  <div>
+    <a href="/" style="color: white; margin-right: 20px; text-decoration: none;">🏠 <span style="color: lightgreen;">Trang chủ</span></a>
+    <a href="/assets" style="color: white; margin-right: 20px; text-decoration: none;">📦 <span style="color: lightblue;">Tài sản</span></a>
+    <a href="/orders" style="color: white; margin-right: 20px; text-decoration: none;">🧾 <span style="color: orange;">Đơn hàng</span></a>
+  </div>
+  <div>
+    👤 {{ request.session.get("username", "Chưa đăng nhập") }} 
+    ({{ request.session.get("role", "guest") }})
+    <a href="/logout" style="color: #ffc107; margin-left: 15px; text-decoration: none;">🚪 Đăng xuất</a>
+  </div>
 </div>
