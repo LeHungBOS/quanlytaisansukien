@@ -20,10 +20,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # Database - Sử dụng PostgreSQL khi triển khai thực tế
-DATABASE_URL = os.getenv("DATABASE_URL")
-if not DATABASE_URL:
-    raise ValueError("postgresql://postgres:etjlFARnCMmVDcAVokkRqunFToVHAvHM@postgres.railway.internal:5432/railway")
-
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:etjlFARnCMmVDcAVokkRqunFToVHAvHM@postgres.railway.internal:5432/railway")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
@@ -65,18 +62,13 @@ class OrderDB(Base):
 
 Base.metadata.create_all(bind=engine)
 
-# Middleware kiểm tra đăng nhập
-@app.middleware("http")
-async def require_login(request: Request, call_next):
-    if request.url.path not in ("/login", "/logout") and not request.url.path.startswith("/static"):
-        if not request.session.get("user"):
-            return RedirectResponse("/login")
-    response = await call_next(request)
-    return response
-
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "user": request.session.get("user"), "role": request.session.get("role")})
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "user": request.session.get("user"),
+        "role": request.session.get("role")
+    })
 
 @app.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
@@ -96,7 +88,7 @@ def login_submit(request: Request, username: str = Form(...), password: str = Fo
 @app.get("/logout")
 def logout(request: Request):
     request.session.clear()
-    return RedirectResponse("/login")
+    return RedirectResponse("/")
 
 @app.get("/assets", response_class=HTMLResponse)
 def list_assets(request: Request):
