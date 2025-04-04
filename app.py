@@ -1,4 +1,4 @@
-# app.py - Quản lý tài sản và đơn hàng với FastAPI (có login)
+# app.py - Quản lý tài sản và đơn hàng với FastAPI (có login, dùng PostgreSQL)
 from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -19,13 +19,16 @@ app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "supers
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-# Database
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:etjlFARnCMmVDcAVokkRqunFToVHAvHM@postgres.railway.internal:5432/railway")
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {})
+# Database - Sử dụng PostgreSQL khi triển khai thực tế
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("postgresql://postgres:etjlFARnCMmVDcAVokkRqunFToVHAvHM@postgres.railway.internal:5432/railway")
+
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 Base = declarative_base()
 
-# Many-to-Many Relationship Table
+# Bảng trung gian: nhiều-nhiều giữa đơn hàng và thiết bị
 order_asset_table = Table(
     "order_asset", Base.metadata,
     Column("order_id", String, ForeignKey("orders.id")),
@@ -62,11 +65,19 @@ class OrderDB(Base):
 
 Base.metadata.create_all(bind=engine)
 
+# Middleware kiểm tra đăng nhập
+@app.middleware("http")
+async def require_login(request: Request, call_next):
+    if request.url.path not in ("/login", "/logout") and not request.url.path.startswith("/static"):
+        if not request.session.get("user"):
+            return RedirectResponse("/login")
+    response = await call_next(request)
+    return response
+
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "user": request.session.get("user"), "role": request.session.get("role")})
 
-# ---------------- LOGIN ----------------
 @app.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
@@ -86,7 +97,6 @@ def login_submit(request: Request, username: str = Form(...), password: str = Fo
 def logout(request: Request):
     request.session.clear()
     return RedirectResponse("/login")
-# ---------------------------------------
 
 @app.get("/assets", response_class=HTMLResponse)
 def list_assets(request: Request):
