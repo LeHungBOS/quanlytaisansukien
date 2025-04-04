@@ -1,18 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Đăng nhập</title>
+  <meta charset="UTF-8">
+  <title>Đăng nhập</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h2>Đăng nhập</h2>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+  <div class="bg-white p-6 rounded shadow-md w-full max-w-sm">
+    <h2 class="text-2xl font-bold mb-4 text-center">Đăng nhập</h2>
     {% if error %}
-        <p style="color:red;">{{ error }}</p>
+      <div class="bg-red-100 text-red-700 p-2 rounded mb-4">{{ error }}</div>
     {% endif %}
-    <form method="post" action="/login">
-        <label>Tên đăng nhập: <input type="text" name="username" required></label><br>
-        <label>Mật khẩu: <input type="password" name="password" required></label><br>
-        <button type="submit">Đăng nhập</button>
+    <form method="post" action="/login" class="space-y-4">
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700">Tài khoản</label>
+        <input type="text" name="username" required class="mt-1 w-full border px-3 py-2 rounded focus:outline-none focus:ring focus:border-blue-300">
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Mật khẩu</label>
+        <input type="password" name="password" required class="mt-1 w-full border px-3 py-2 rounded focus:outline-none focus:ring focus:border-blue-300">
+      </div>
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">Đăng nhập</button>
     </form>
+  </div>
 </body>
 </html>
