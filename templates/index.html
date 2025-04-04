@@ -1,75 +1,30 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Quản lý Tài sản & Đơn hàng</title>
-    <style>
-        body {
-            font-family: "Segoe UI", sans-serif;
-            margin: 40px;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-        h1 {
-            color: #222;
-        }
-        .container {
-            max-width: 900px;
-            margin: auto;
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
-        }
-        .btn {
-            display: inline-block;
-            margin: 8px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            transition: 0.3s;
-        }
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        .btn.logout {
-            background-color: #dc3545;
-        }
-        .btn.logout:hover {
-            background-color: #a71d2a;
-        }
-        .grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Trang chủ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<div class="container">
-    <h1>Chào {{ request.session.get('username', 'Khách') }} 👋</h1>
+<body class="bg-gray-50">
+  <div class="p-4 shadow bg-white flex justify-between items-center">
+    <h1 class="text-xl font-bold">Quản lý thiết bị</h1>
+    <div class="space-x-4">
+      {% if user %}
+        <span>Xin chào, {{ user }}</span>
+        {% if role == 'admin' %}
+          <a href="/assets" class="text-blue-600 hover:underline">Quản lý thiết bị</a>
+          <a href="/orders" class="text-blue-600 hover:underline">Đơn hàng</a>
+        {% endif %}
+        <a href="/logout" class="text-red-600 hover:underline">Đăng xuất</a>
+      {% else %}
+        <a href="/login" class="text-blue-600 hover:underline">Đăng nhập</a>
+      {% endif %}
+    </div>
+  </div>
 
-    {% if request.session.get('user_id') %}
-        <p><strong>Vai trò:</strong> {{ request.session.get('role') }}</p>
-
-        <div class="grid">
-            <a href="/assets" class="btn">📦 Danh sách Tài sản</a>
-            {% if request.session.get('role') == 'admin' %}
-                <a href="/assets/add" class="btn">➕ Thêm Tài sản</a>
-            {% endif %}
-            <a href="/orders" class="btn">📑 Danh sách Đơn hàng</a>
-            {% if request.session.get('role') == 'admin' %}
-                <a href="/orders/add" class="btn">➕ Tạo Đơn hàng</a>
-            {% endif %}
-            <a href="/assets/export" class="btn">📥 Xuất CSV</a>
-            <a href="/logout" class="btn logout">🚪 Đăng xuất</a>
-        </div>
-
-    {% else %}
-        <p><a href="/login" class="btn">🔐 Đăng nhập</a></p>
-    {% endif %}
-</div>
+  <div class="p-6">
+    <h2 class="text-2xl">Chào mừng đến hệ thống quản lý tài sản & đơn hàng</h2>
+    <p class="mt-2 text-gray-600">Bạn có thể quản lý thiết bị, theo dõi đơn hàng, và xuất dữ liệu.</p>
+  </div>
 </body>
 </html>
