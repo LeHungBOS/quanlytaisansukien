@@ -22,7 +22,8 @@ app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "supers
 
 # Route favicon.ico để tránh lỗi 500
 @app.get("/favicon.ico", include_in_schema=False)
-def ignore_favicon():
+def favicon():
+    return HTMLResponse(status_code=204)
     return HTMLResponse("", status_code=204)
     return HTMLResponse("", status_code=204)
 
