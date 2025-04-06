@@ -10,3 +10,4 @@ reportlab
 python-barcode
 itsdangerous
 bcrypt
+reportlab
