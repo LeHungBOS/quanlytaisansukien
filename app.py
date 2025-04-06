@@ -19,6 +19,13 @@ load_dotenv()
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "supersecret"))
+
+# Kiểm tra đã khởi tạo SessionMiddleware chưa
+@app.middleware("http")
+async def ensure_session_support(request: Request, call_next):
+    if "session" not in request.scope:
+        return HTMLResponse("Lỗi hệ thống: SessionMiddleware chưa được cấu hình.", status_code=500)
+    return await call_next(request)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
