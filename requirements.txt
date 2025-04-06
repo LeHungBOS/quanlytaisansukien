@@ -9,3 +9,4 @@ qrcode
 reportlab
 python-barcode
 itsdangerous
+bcrypt
