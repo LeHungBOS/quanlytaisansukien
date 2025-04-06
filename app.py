@@ -20,8 +20,7 @@ load_dotenv()
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "supersecret"))
 
-# Route favicon.ico để tránh lỗi 500
-    return HTMLResponse("", status_code=204)
+
 
 @app.middleware("http")
 async def ensure_session_support(request: Request, call_next):
