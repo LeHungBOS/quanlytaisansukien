@@ -1,7 +1,7 @@
 # ✅ app.py - FASTAPI HOÀN CHỈNH
 # Đầy đủ chức năng: đăng nhập, phân quyền, đơn hàng, thiết bị, QR/Barcode, thống kê, PDF, logs
 from fastapi import FastAPI, Request, Form, UploadFile, File, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
@@ -20,12 +20,20 @@ load_dotenv()
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "supersecret"))
 
-# Kiểm tra đã khởi tạo SessionMiddleware chưa
+# Route favicon.ico để tránh lỗi 500
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    favicon_path = "static/favicon.ico"
+    if os.path.exists(favicon_path):
+        return FileResponse(favicon_path)
+    return HTMLResponse("", status_code=204)
+
 @app.middleware("http")
 async def ensure_session_support(request: Request, call_next):
     if "session" not in request.scope:
         return HTMLResponse("Lỗi hệ thống: SessionMiddleware chưa được cấu hình.", status_code=500)
     return await call_next(request)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
