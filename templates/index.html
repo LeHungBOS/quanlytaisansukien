@@ -6,14 +6,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50">
-  <div class="p-4 shadow bg-white flex justify-between items-center">
-    <h1 class="text-xl font-bold">Quản lý thiết bị</h1>
+  <div class="bg-white p-4 flex justify-between items-center shadow">
+    <h1 class="text-xl font-bold">Quản lý tài sản</h1>
     <div class="space-x-4">
       {% if user %}
-        <span>Xin chào, {{ user }}</span>
+        <span class="text-sm">👋 Xin chào {{ user }}</span>
         {% if role == 'admin' %}
-          <a href="/assets" class="text-blue-600 hover:underline">Quản lý thiết bị</a>
-          <a href="/orders" class="text-blue-600 hover:underline">Đơn hàng</a>
+          <a href="/admin" class="text-blue-600 hover:underline">Trang quản trị</a>
         {% endif %}
         <a href="/logout" class="text-red-600 hover:underline">Đăng xuất</a>
       {% else %}
@@ -23,8 +22,27 @@
   </div>
 
   <div class="p-6">
-    <h2 class="text-2xl">Chào mừng đến hệ thống quản lý tài sản & đơn hàng</h2>
-    <p class="mt-2 text-gray-600">Bạn có thể quản lý thiết bị, theo dõi đơn hàng, và xuất dữ liệu.</p>
+    <h2 class="text-2xl font-semibold mb-4">🎯 Chức năng hệ thống</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a href="/assets" class="block p-4 border rounded hover:shadow">📦 Quản lý thiết bị</a>
+      <a href="/orders" class="block p-4 border rounded hover:shadow">🧾 Quản lý đơn hàng</a>
+      <a href="/scan" class="block p-4 border rounded hover:shadow">📷 Quét mã thiết bị / đơn</a>
+      <a href="/assets/export" class="block p-4 border rounded hover:shadow">📤 Xuất danh sách thiết bị</a>
+      <a href="/stats" class="block p-4 border rounded hover:shadow">📊 Thống kê & biểu đồ</a>
+      {% if role == 'admin' %}
+        <a href="/users" class="block p-4 border rounded hover:shadow">👥 Quản lý người dùng</a>
+      {% endif %}
+    </div>
   </div>
+
+  {% if request.session.get('flash') %}
+    <div class="p-4">
+      {% if request.session.flash.success %}
+        <div class="bg-green-100 text-green-800 p-2 rounded">{{ request.session.flash.success }}</div>
+      {% elif request.session.flash.error %}
+        <div class="bg-red-100 text-red-800 p-2 rounded">{{ request.session.flash.error }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
 </body>
 </html>
